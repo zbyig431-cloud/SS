@@ -3,26 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>モンスト 絆ゲージ管理ツール</title>
+  <title>モンスト 絆ゲージ管理ツール(カレンダー対応版)</title>
   <style>
     :root {
-      --bg-color: #f4f6f9;
-      --card-bg: #ffffff;
-      --primary-color: #3b82f6;
-      --danger-color: #ef4444;
-      --warning-color: #f59e0b;
-      --text-color: #1f2937;
-      --border-color: #e5e7eb;
+      /* ダークテーマに合わせた配色 */
+      --bg-color: rgba(30, 41, 59, 0.7); /* 半透明の暗い背景 */
+      --card-bg: rgba(30, 41, 59, 0.9); /* さらに不透明なカード背景 */
+      --primary-color: #3b82f6; /* プライマリーブルー */
+      --danger-color: #ef4444; /* デンジャーレッド */
+      --warning-color: #f59e0b; /* 警告オレンジ */
+      --text-color: #e5e7eb; /* 明るいテキストカラー */
+      --border-color: rgba(229, 231, 235, 0.2); /* 半透明のボーダー */
+      --input-bg: rgba(255, 255, 255, 0.05); /* 入力フィールドの半透明背景 */
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg-color);
+      /* 背景画像の設定 */
+      background-image: url('image_0.png'); /* 画像ファイルを指定 */
+      background-size: cover; /* 画面全体を覆う */
+      background-position: center; /* 中央に配置 */
+      background-attachment: fixed; /* スクロールしても固定 */
+      background-color: #111827; /* フォールバックカラー */
       color: var(--text-color);
       margin: 0;
       padding: 16px;
       display: flex;
       justify-content: center;
+      min-height: 100vh; /* 最低限の高さ */
     }
 
     .container {
@@ -37,16 +45,38 @@
       font-size: 1.5rem;
       text-align: center;
       margin: 0 0 8px 0;
+      color: white;
     }
 
     .card {
       background: var(--card-bg);
       border-radius: 12px;
       padding: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 少し影を強める */
+      backdrop-filter: blur(5px); /* ガラスのようなぼかし効果 */
+      border: 1px solid var(--border-color);
     }
 
-    /* 今日の進捗カウンター */
+    /* 日付選択カレンダー */
+    .date-control {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .date-control label {
+      font-size: 1rem;
+      margin-right: 8px;
+    }
+    input[type="date"] {
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    /* 選択日の進捗カウンター */
     .today-counter {
       text-align: center;
       background: linear-gradient(135deg, #1e40af, #3b82f6);
@@ -73,6 +103,8 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       font-size: 1rem;
+      background-color: var(--input-bg);
+      color: var(--text-color);
     }
 
     button {
@@ -91,8 +123,8 @@
     .btn-done { background-color: #9ca3af; color: white; }
     .btn-danger { background-color: var(--danger-color); color: white; }
     .btn-edit { background-color: #6b7280; color: white; }
-    .btn-sort { background-color: #e5e7eb; color: var(--text-color); font-weight: normal; font-size: 0.85rem; }
-    .btn-sort.active { background-color: var(--primary-color); color: white; font-weight: bold; }
+    .btn-sort { background-color: #374151; color: var(--text-color); font-weight: normal; font-size: 0.85rem; border: 1px solid var(--border-color); }
+    .btn-sort.active { background-color: var(--primary-color); color: white; font-weight: bold; border: none; }
 
     /* ソートボタンエリア */
     .sort-controls {
@@ -103,7 +135,7 @@
     }
     .sort-label {
       font-size: 0.85rem;
-      color: #6b7280;
+      color: #9ca3af;
     }
 
     /* フレンドリスト */
@@ -123,7 +155,7 @@
       padding: 12px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      background-color: #fff;
+      background-color: rgba(255, 255, 255, 0.05); /* 半透明のリフト背景 */
       gap: 8px;
     }
 
@@ -137,11 +169,12 @@
     .friend-name {
       font-weight: bold;
       font-size: 1.05rem;
+      color: white;
     }
 
     .friend-count {
       font-size: 0.9rem;
-      color: #4b5563;
+      color: #d1d5db;
     }
 
     /* 9回目・19回目の強調 */
@@ -161,15 +194,16 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.7);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 100;
+      backdrop-filter: blur(5px);
     }
     .modal-overlay.active { display: flex; }
     .modal {
-      background: white;
+      background: var(--card-bg);
       padding: 20px;
       border-radius: 12px;
       width: 90%;
@@ -177,6 +211,11 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .modal h3 {
+      margin: 0;
+      color: white;
     }
   </style>
 </head>
@@ -185,9 +224,15 @@
   <div class="container">
     <h1>絆ゲージ管理ツール</h1>
 
-    <!-- 本日の達成数 -->
+    <!-- 日付選択カレンダー -->
+    <div class="date-control">
+      <label for="dateInput">日付を選択:</label>
+      <input type="date" id="dateInput" onchange="render()">
+    </div>
+
+    <!-- 選択日の達成数 -->
     <div class="card today-counter">
-      <h2>本日の達成人数</h2>
+      <h2 id="dateCountLabel">選択日の達成人数</h2>
       <div class="today-count-val" id="todayCount">0人</div>
     </div>
 
@@ -203,9 +248,9 @@
     <div class="card">
       <div class="sort-controls" style="margin-bottom: 12px;">
         <span class="sort-label">並び替え:</span>
-        <button class="btn-sort active" onclick="setSort('created')">登録日順</button>
-        <button class="btn-sort" onclick="setSort('kana')">五十音順</button>
-        <button class="btn-sort" onclick="setSort('progress')">進捗順</button>
+        <button class="btn-sort active" id="btnSortCreated" onclick="setSort('created')">登録日順</button>
+        <button class="btn-sort" id="btnSortKana" onclick="setSort('kana')">五十音順</button>
+        <button class="btn-sort" id="btnSortProgress" onclick="setSort('progress')">進捗順</button>
       </div>
 
       <ul class="friend-list" id="friendList"></ul>
@@ -216,16 +261,16 @@
   <div class="modal-overlay" id="editModal">
     <div class="modal">
       <h3>フレンド名の編集</h3>
-      <input type="text" id="editNameInput" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+      <input type="text" id="editNameInput" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); color: var(--text-color);">
       <div style="display: flex; gap: 8px; justify-content: flex-end;">
-        <button onclick="closeEditModal()" style="background: #9ca3af; color: white;">キャンセル</button>
+        <button onclick="closeEditModal()" style="background: #6b7280; color: white;">キャンセル</button>
         <button onclick="saveEditName()" class="btn-primary">保存</button>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'monst_kizuna_friends_data';
+    const STORAGE_KEY = 'monst_kizuna_friends_data_v2'; // カレンダー対応に伴いキーを更新
     
     let friends = [];
     let currentSort = 'created';
@@ -242,7 +287,21 @@
       const data = localStorage.getItem(STORAGE_KEY);
       if (data) {
         friends = JSON.parse(data);
+        
+        // 旧データ形式(lastCompletedDate)から新データ形式(completedDates)へのマイグレーション処理
+        friends = friends.map(friend => {
+          if (!friend.completedDates) {
+            return {
+              ...friend,
+              completedDates: friend.lastCompletedDate ? [friend.lastCompletedDate] : []
+            };
+          }
+          return friend;
+        });
+        saveData(); // マイグレーション後のデータを保存
       }
+      // カレンダーを今日の日付に設定
+      document.getElementById('dateInput').value = getTodayString();
       render();
     }
 
@@ -262,7 +321,7 @@
         id: Date.now().toString(),
         name: name,
         totalCount: 0,
-        lastCompletedDate: null,
+        completedDates: [], // 完了した日付のリスト
         createdAt: Date.now()
       };
 
@@ -272,26 +331,40 @@
       render();
     });
 
-    // 本日の達成数カウント
-    function updateTodayCount() {
+    // 選択された日付を取得
+    function getSelectedDateString() {
+      return document.getElementById('dateInput').value;
+    }
+
+    // 選択日の達成数カウント
+    function updateTodayCount(selectedDate) {
+      const count = friends.filter(f => f.completedDates.includes(selectedDate)).length;
+      
+      // ラベルを選択日に合わせて更新
       const todayStr = getTodayString();
-      const count = friends.filter(f => f.lastCompletedDate === todayStr).length;
+      const label = document.getElementById('dateCountLabel');
+      if (selectedDate === todayStr) {
+        label.textContent = '本日の達成人数';
+      } else {
+        label.textContent = `${selectedDate} の達成人数`;
+      }
+
       document.getElementById('todayCount').textContent = `${count}人`;
     }
 
-    // 完了トグル (今日完了済みなら解除、未完了なら達成)
+    // 完了トグル (選択日完了済みなら解除、未完了なら達成)
     function toggleComplete(id) {
-      const todayStr = getTodayString();
+      const selectedDate = getSelectedDateString();
       const friend = friends.find(f => f.id === id);
       if (!friend) return;
 
-      if (friend.lastCompletedDate === todayStr) {
-        // 今日の完了を取り消す
-        friend.lastCompletedDate = null;
+      if (friend.completedDates.includes(selectedDate)) {
+        // 選択日の完了を取り消す
+        friend.completedDates = friend.completedDates.filter(date => date !== selectedDate);
         friend.totalCount = Math.max(0, friend.totalCount - 1);
       } else {
-        // 完了にする
-        friend.lastCompletedDate = todayStr;
+        // 選択日を完了にする
+        friend.completedDates.push(selectedDate);
         friend.totalCount += 1;
       }
 
@@ -302,8 +375,13 @@
     // ソート基準の変更
     function setSort(sortType) {
       currentSort = sortType;
+      
+      // ボタンのアクティブ状態を切り替え
       document.querySelectorAll('.btn-sort').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      if (sortType === 'created') document.getElementById('btnSortCreated').classList.add('active');
+      if (sortType === 'kana') document.getElementById('btnSortKana').classList.add('active');
+      if (sortType === 'progress') document.getElementById('btnSortProgress').classList.add('active');
+      
       render();
     }
 
@@ -352,7 +430,9 @@
 
     // リスト描画
     function render() {
-      updateTodayCount();
+      const selectedDate = getSelectedDateString();
+      updateTodayCount(selectedDate);
+      
       const listEl = document.getElementById('friendList');
       listEl.innerHTML = '';
 
@@ -373,7 +453,11 @@
       sorted.forEach(friend => {
         const displayCount = getDisplayCount(friend.totalCount);
         const isReach = displayCount === 9 || displayCount === 19;
-        const isDoneToday = friend.lastCompletedDate === todayStr;
+        
+        // 選択日が完了済みかどうかを判定
+        const isDoneOnSelectedDate = friend.completedDates.includes(selectedDate);
+        // 本日が完了済みかどうかを判定 (9回目・19回目の強調メッセージ用)
+        const isDoneToday = friend.completedDates.includes(todayStr);
 
         const li = document.createElement('li');
         li.className = 'friend-item';
@@ -395,9 +479,9 @@
           </div>
           <div class="friend-actions">
             <button 
-              class="${isDoneToday ? 'btn-done' : 'btn-success'}" 
+              class="${isDoneOnSelectedDate ? 'btn-done' : 'btn-success'}" 
               onclick="toggleComplete('${friend.id}')">
-              ${isDoneToday ? '本日完了' : '完了'}
+              ${isDoneOnSelectedDate ? '選択日完了' : '完了'}
             </button>
             <button class="btn-edit" onclick="openEditModal('${friend.id}')">編集</button>
             <button class="btn-danger" onclick="deleteFriend('${friend.id}')">削除</button>
