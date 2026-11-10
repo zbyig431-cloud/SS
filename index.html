@@ -6,16 +6,17 @@
   <title>モンスト 絆ゲージ管理ツール</title>
   <style>
     :root {
-      --bg-color: rgba(15, 23, 42, 0.85);
-      --card-bg: rgba(30, 41, 59, 0.95);
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-done-bg: rgba(16, 185, 129, 0.12);
       --primary-color: #3b82f6;
       --success-color: #10b981;
+      --success-border: #34d399;
       --danger-color: #ef4444;
-      --green-bg: rgba(16, 185, 129, 0.2);
-      --green-border: #34d399;
       --text-color: #f3f4f6;
-      --border-color: rgba(229, 231, 235, 0.2);
-      --input-bg: rgba(255, 255, 255, 0.08);
+      --text-muted: #94a3b8;
+      --border-color: rgba(229, 231, 235, 0.15);
+      --input-bg: rgba(255, 255, 255, 0.06);
     }
 
     body {
@@ -24,7 +25,7 @@
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
-      background-color: #0f172a;
+      background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
       padding: 16px;
@@ -40,7 +41,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      padding-bottom: 60px;
+      padding-bottom: 80px;
     }
 
     h1 {
@@ -53,8 +54,8 @@
     .subtitle {
       text-align: center;
       font-size: 0.95rem;
-      color: #94a3b8;
-      margin-bottom: 8px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
     }
 
     .card {
@@ -64,60 +65,6 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(6px);
       border: 1px solid var(--border-color);
-    }
-
-    /* 認証画面 */
-    .auth-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .auth-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
-      font-weight: bold;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .form-group label {
-      font-size: 0.95rem;
-      color: #cbd5e1;
-    }
-    .form-group input {
-      padding: 14px;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      font-size: 1.1rem;
-      background-color: var(--input-bg);
-      color: var(--text-color);
-    }
-
-    /* ヘッダーバー */
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.95rem;
-      color: #94a3b8;
-      padding: 0 4px;
     }
 
     /* 上部固定検索バー */
@@ -140,6 +87,10 @@
       background-color: var(--input-bg);
       color: var(--text-color);
       box-sizing: border-box;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
     }
 
     /* 日付選択カレンダー */
@@ -164,12 +115,12 @@
       text-align: center;
     }
 
-    /* 選択日の進捗カウンター */
+    /* 選択日の達成カウンター */
     .today-counter {
       text-align: center;
       background: linear-gradient(135deg, #1e40af, #3b82f6);
       color: white;
-      padding: 20px;
+      padding: 18px;
     }
     .today-counter h2 {
       margin: 0 0 6px 0;
@@ -177,7 +128,7 @@
       opacity: 0.9;
     }
     .today-count-val {
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: bold;
     }
 
@@ -209,25 +160,36 @@
       opacity: 0.8;
       transform: scale(0.98);
     }
-    .btn-primary { background-color: var(--primary-color); color: white; width: 100%; }
-    .btn-success { background-color: var(--success-color); color: white; font-size: 1.15rem; padding: 14px 22px; width: 100%; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4); }
-    .btn-done { background-color: #64748b; color: white; font-size: 1.1rem; padding: 14px 22px; width: 100%; }
-    .btn-danger { background-color: var(--danger-color); color: white; padding: 10px 14px; font-size: 0.9rem; }
-    .btn-edit { background-color: #475569; color: white; padding: 10px 14px; font-size: 0.9rem; }
-    .btn-logout { background-color: transparent; border: 1px solid #64748b; color: #94a3b8; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; }
-    
-    .btn-sort { background-color: #334151; color: var(--text-color); font-weight: normal; font-size: 0.95rem; border: 1px solid var(--border-color); padding: 10px 14px; flex: 1; text-align: center; }
-    .btn-sort.active { background-color: var(--primary-color) !important; color: white !important; font-weight: bold !important; border: none !important; }
+    .btn-primary { background-color: var(--primary-color); color: white; }
+    .btn-danger { background-color: var(--danger-color); color: white; padding: 8px 12px; font-size: 0.85rem; }
+    .btn-edit { background-color: #475569; color: white; padding: 8px 12px; font-size: 0.85rem; }
 
-    /* ソートボタンエリア */
+    /* 並び替えボタン */
     .sort-controls {
-      display: flex;
-      gap: 6px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
       margin-top: 4px;
+    }
+    .btn-sort {
+      background-color: #334151;
+      color: var(--text-color);
+      font-weight: normal;
+      font-size: 0.9rem;
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px;
+    }
+    .btn-sort.active {
+      background-color: var(--primary-color) !important;
+      color: white !important;
+      font-weight: bold !important;
+      border-color: var(--primary-color) !important;
     }
     .sort-label {
       font-size: 0.9rem;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-bottom: 4px;
       display: block;
     }
@@ -239,7 +201,7 @@
       margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .friend-item {
@@ -247,66 +209,96 @@
       flex-direction: column;
       padding: 16px;
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      background-color: rgba(255, 255, 255, 0.03);
-      gap: 12px;
-      transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      border-radius: 14px;
+      background-color: var(--card-bg);
+      gap: 14px;
+      transition: all 0.2s;
     }
 
-    /* 今日すでに絆を貯めた人のフレームごと緑にするハイライト */
+    /* 達成時の緑色フレーム＆背景 */
     .friend-item.completed-today {
-      background-color: var(--green-bg) !important;
-      border: 2px solid var(--green-border) !important;
-      box-shadow: 0 0 12px rgba(52, 211, 153, 0.35);
+      background-color: var(--card-done-bg) !important;
+      border: 2px solid var(--success-border) !important;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
     }
 
-    .friend-main-row {
+    .friend-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
-    }
-
-    .friend-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      align-items: center;
     }
 
     .friend-name {
       font-weight: bold;
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       color: white;
     }
 
-    .friend-count {
-      font-size: 1rem;
-      color: #cbd5e1;
+    .friend-header-actions {
+      display: flex;
+      gap: 6px;
     }
 
-    /* 9回目・19回目の強調 */
-    .reach-warning {
-      color: #f87171;
+    /* 今日の絆ボタン (画像風トグル) */
+    .toggle-today-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 1.05rem;
       font-weight: bold;
-      font-size: 1rem;
-      background: rgba(239, 68, 68, 0.15);
-      padding: 4px 8px;
-      border-radius: 6px;
-      display: inline-block;
-      width: fit-content;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      transition: all 0.2s;
+    }
+    .friend-item.completed-today .toggle-today-btn {
+      background-color: var(--success-color);
+      color: white;
+      border-color: var(--success-color);
     }
 
-    .friend-actions {
+    /* 4つのスタッツボックス (今週・今月・進捗・累計) */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 8px 4px;
+      text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
     }
 
-    .action-buttons-row {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    /* オーブチケットリーチの赤文字 */
+    .reach-red {
+      color: var(--danger-color) !important;
+    }
+
+    .reach-notice {
+      font-size: 0.8rem;
+      color: var(--danger-color);
+      font-weight: bold;
+      text-align: center;
+      margin-top: -4px;
     }
 
     /* 右下TOPボタン */
@@ -317,7 +309,7 @@
       background: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 505px;
+      border-radius: 50%;
       width: 50px;
       height: 50px;
       display: flex;
@@ -335,7 +327,7 @@
       transform: scale(1.05);
     }
 
-    /* モーダルダイアログ */
+    /* モーダル */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -395,30 +387,22 @@
   </div>
 
   <script>
-    const USERS_STORAGE_KEY = 'monst_kizuna_all_users_v4';
-    const CURRENT_USER_KEY = 'monst_kizuna_logged_in_user_v4';
+    const STORAGE_KEY = 'monst_kizuna_tool_data_v7';
 
-    let currentUser = null;
-    let usersData = {};
-    let currentSort = 'created';
+    let friends = [];
+    let currentSort = 'created'; // 'created' | 'kana' | 'progress' | 'uncompleted'
     let editingFriendId = null;
 
     function init() {
-      const savedUsers = localStorage.getItem(USERS_STORAGE_KEY);
-      if (savedUsers) {
-        usersData = JSON.parse(savedUsers);
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        friends = JSON.parse(saved);
       }
-      
-      const loggedInUser = localStorage.getItem(CURRENT_USER_KEY);
-      if (loggedInUser && usersData[loggedInUser]) {
-        currentUser = loggedInUser;
-      }
-      
       renderApp();
     }
 
-    function saveUsersData() {
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usersData));
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(friends));
     }
 
     function getTodayString() {
@@ -426,137 +410,112 @@
       return today.toISOString().split('T')[0];
     }
 
+    function getSelectedDateString() {
+      const el = document.getElementById('dateInput');
+      return el ? el.value : getTodayString();
+    }
+
+    // 週（月曜〜日曜）の達成回数を計算 (0〜7)
+    function getWeekCount(friend, dateStr) {
+      const date = new Date(dateStr);
+      const day = date.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(date);
+      monday.setDate(date.getDate() + diffToMonday);
+      
+      let count = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const dStr = d.toISOString().split('T')[0];
+        if (friend.completedDates && friend.completedDates.includes(dStr)) {
+          count++;
+        }
+      }
+      return count;
+    }
+
+    // 月（1日〜月末）の達成回数を計算 (0〜31)
+    function getMonthCount(friend, dateStr) {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      
+      let count = 0;
+      for (let i = 1; i <= lastDay; i++) {
+        const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        if (friend.completedDates && friend.completedDates.includes(dStr)) {
+          count++;
+        }
+      }
+      return count;
+    }
+
+    // 20回周期の進捗 (1〜20)
+    function getProgressInfo(totalCount) {
+      if (totalCount === 0) return { val: 0, isReach: false, ticket: '' };
+      const rem = totalCount % 20;
+      const val = rem === 0 ? 20 : rem;
+      const isReach = (val === 9 || val === 19);
+      const ticket = val === 9 ? '1枚目' : (val === 19 ? '2枚目' : '');
+      return { val, isReach, ticket };
+    }
+
     function renderApp() {
       const container = document.getElementById('appContainer');
-      
-      if (!currentUser) {
-        container.innerHTML = `
-          <h1>絆ゲージ管理ツール</h1>
-          <div class="subtitle">ログインまたは新規登録してください</div>
-          <div class="card auth-container">
-            <div class="auth-tabs">
-              <button class="tab-btn active" id="tabLogin" onclick="switchAuthMode('login')">ログイン</button>
-              <button class="tab-btn" id="tabRegister" onclick="switchAuthMode('register')">新規登録</button>
-            </div>
-            
-            <form id="authForm" onsubmit="handleAuth(event)" style="display: flex; flex-direction: column; gap: 14px;">
-              <div class="form-group">
-                <label for="authUsername">ユーザー名</label>
-                <input type="text" id="authUsername" placeholder="ユーザー名を入力" required>
-              </div>
-              <div class="form-group">
-                <label for="authPassword">パスワード (数字6桁)</label>
-                <input type="password" id="authPassword" maxlength="6" pattern="\\d{6}" placeholder="例: 123456" required>
-              </div>
-              <button type="submit" class="btn-primary" id="authSubmitBtn" style="margin-top: 8px; padding: 14px; font-size: 1.1rem;">ログイン</button>
-            </form>
+      const selectedDate = document.getElementById('dateInput') ? document.getElementById('dateInput').value : getTodayString();
+      const searchVal = document.getElementById('friendSearchInput') ? document.getElementById('friendSearchInput').value : '';
+
+      container.innerHTML = `
+        <h1>絆ゲージ管理ツール</h1>
+        <div class="subtitle">フレンドとの絆を管理してオーブチケットを集めよう！</div>
+
+        <!-- 画面上部に固定するフレンド検索バー -->
+        <div class="card sticky-search-card">
+          <input type="text" id="friendSearchInput" class="search-input" placeholder="🔍 フレンド名で検索して移動..." value="${escapeHtml(searchVal)}" oninput="searchAndScrollFriend()">
+        </div>
+
+        <!-- 日付選択カレンダー -->
+        <div class="card date-control">
+          <label for="dateInput">📅 記録する日付を選択:</label>
+          <input type="date" id="dateInput" value="${selectedDate}" onchange="renderMainContent()">
+        </div>
+
+        <!-- 選択日の達成人数カウンター -->
+        <div class="card today-counter">
+          <h2 id="dateCountLabel">選択日の達成人数</h2>
+          <div class="today-count-val" id="todayCount">0人</div>
+        </div>
+
+        <!-- フレンド追加フォーム -->
+        <div class="card">
+          <form class="add-form" id="addFriendForm" onsubmit="addFriend(event)">
+            <input type="text" id="friendNameInput" placeholder="新しいフレンド名を入力" required>
+            <button type="submit" class="btn-primary" style="padding: 14px 22px; font-size: 1.1rem;">追加</button>
+          </form>
+        </div>
+
+        <!-- 並び替え ＆ リスト表示 -->
+        <div class="card">
+          <span class="sort-label">並び替え:</span>
+          <div class="sort-controls">
+            <button class="btn-sort ${currentSort === 'created' ? 'active' : ''}" onclick="setSort('created')">登録日順</button>
+            <button class="btn-sort ${currentSort === 'kana' ? 'active' : ''}" onclick="setSort('kana')">五十音順</button>
+            <button class="btn-sort ${currentSort === 'progress' ? 'active' : ''}" onclick="setSort('progress')">進捗順</button>
+            <button class="btn-sort ${currentSort === 'uncompleted' ? 'active' : ''}" onclick="setSort('uncompleted')">未達成/達成</button>
           </div>
-        `;
-      } else {
-        const selectedDate = document.getElementById('dateInput') ? document.getElementById('dateInput').value : getTodayString();
-        const searchVal = document.getElementById('friendSearchInput') ? document.getElementById('friendSearchInput').value : '';
-        
-        container.innerHTML = `
-          <div class="header-bar">
-            <span>アカウント: <strong>${escapeHtml(currentUser)}</strong></span>
-            <button class="btn-logout" onclick="logout()">ログアウト</button>
+          
+          <div style="margin-top: 18px;">
+            <ul class="friend-list" id="friendList"></ul>
           </div>
+        </div>
 
-          <h1>絆ゲージ管理</h1>
+        <!-- 右下TOPに戻るボタン -->
+        <button class="top-scroll-btn" onclick="scrollToTop()" title="最上部へ移動">⬆️</button>
+      `;
 
-          <!-- 画面上部に固定するフレンド検索バー -->
-          <div class="card sticky-search-card">
-            <input type="text" id="friendSearchInput" class="search-input" placeholder="🔍 フレンド名で検索して移動..." value="${escapeHtml(searchVal)}" oninput="searchAndScrollFriend()">
-          </div>
-
-          <!-- 日付選択カレンダー -->
-          <div class="card date-control">
-            <label for="dateInput">📅 記録する日付を選択:</label>
-            <input type="date" id="dateInput" value="${selectedDate}" onchange="renderMainContent()">
-          </div>
-
-          <!-- 選択日の達成数 -->
-          <div class="card today-counter">
-            <h2 id="dateCountLabel">選択日の達成人数</h2>
-            <div class="today-count-val" id="todayCount">0人</div>
-          </div>
-
-          <!-- フレンド追加フォーム -->
-          <div class="card">
-            <form class="add-form" id="addFriendForm" onsubmit="addFriend(event)">
-              <input type="text" id="friendNameInput" placeholder="フレンド名を入力" required>
-              <button type="submit" class="btn-primary" style="width: auto; padding: 14px 22px; font-size: 1.1rem;">追加</button>
-            </form>
-          </div>
-
-          <!-- ソート切替 ＆ リスト表示 -->
-          <div class="card">
-            <span class="sort-label">並び替え:</span>
-            <div class="sort-controls">
-              <button class="btn-sort ${currentSort === 'created' ? 'active' : ''}" onclick="setSort('created')">登録日順</button>
-              <button class="btn-sort ${currentSort === 'kana' ? 'active' : ''}" onclick="setSort('kana')">五十音順</button>
-              <button class="btn-sort ${currentSort === 'progress' ? 'active' : ''}" onclick="setSort('progress')">進捗順</button>
-            </div>
-            
-            <div style="margin-top: 16px;">
-              <ul class="friend-list" id="friendList"></ul>
-            </div>
-          </div>
-
-          <!-- 右下TOPに戻るボタン -->
-          <button class="top-scroll-btn" onclick="scrollToTop()" title="最上部へ移動">⬆️</button>
-        `;
-        renderMainContent();
-      }
-    }
-
-    let isRegisterMode = false;
-    function switchAuthMode(mode) {
-      isRegisterMode = (mode === 'register');
-      document.getElementById('tabLogin').classList.toggle('active', !isRegisterMode);
-      document.getElementById('tabRegister').classList.toggle('active', isRegisterMode);
-      document.getElementById('authSubmitBtn').textContent = isRegisterMode ? '新規登録して始める' : 'ログイン';
-    }
-
-    function handleAuth(e) {
-      e.preventDefault();
-      const username = document.getElementById('authUsername').value.trim();
-      const password = document.getElementById('authPassword').value.trim();
-
-      if (password.length !== 6 || !/^\d+$/.test(password)) {
-        alert('パスワードは数字6桁で入力してください。');
-        return;
-      }
-
-      if (isRegisterMode) {
-        if (usersData[username]) {
-          alert('このユーザー名は既に存在します。別名にするかログインしてください。');
-          return;
-        }
-        usersData[username] = {
-          password: password,
-          friends: []
-        };
-        saveUsersData();
-        alert('新規登録が完了しました！');
-      } else {
-        if (!usersData[username] || usersData[username].password !== password) {
-          alert('ユーザー名またはパスワードが間違っています。');
-          return;
-        }
-      }
-
-      currentUser = username;
-      localStorage.setItem(CURRENT_USER_KEY, currentUser);
-      renderApp();
-    }
-
-    function logout() {
-      if (confirm('ログアウトしますか？')) {
-        currentUser = null;
-        localStorage.removeItem(CURRENT_USER_KEY);
-        renderApp();
-      }
+      renderMainContent();
     }
 
     function addFriend(e) {
@@ -565,41 +524,35 @@
       const name = input.value.trim();
       if (!name) return;
 
-      const userFriends = usersData[currentUser].friends;
       const newFriend = {
         id: Date.now().toString(),
         name: name,
-        totalCount: 0,
         completedDates: [],
         createdAt: Date.now()
       };
 
-      userFriends.push(newFriend);
-      saveUsersData();
+      friends.push(newFriend);
+      saveData();
       input.value = '';
       renderMainContent();
     }
 
-    function getSelectedDateString() {
-      const el = document.getElementById('dateInput');
-      return el ? el.value : getTodayString();
-    }
-
     function toggleComplete(id) {
       const selectedDate = getSelectedDateString();
-      const userFriends = usersData[currentUser].friends;
-      const friend = userFriends.find(f => f.id === id);
+      const friend = friends.find(f => f.id === id);
       if (!friend) return;
+
+      if (!friend.completedDates) {
+        friend.completedDates = [];
+      }
 
       if (friend.completedDates.includes(selectedDate)) {
         friend.completedDates = friend.completedDates.filter(d => d !== selectedDate);
-        friend.totalCount = Math.max(0, friend.totalCount - 1);
       } else {
         friend.completedDates.push(selectedDate);
-        friend.totalCount += 1;
       }
 
-      saveUsersData();
+      saveData();
       renderMainContent();
     }
 
@@ -609,18 +562,17 @@
     }
 
     function deleteFriend(id) {
-      const userFriends = usersData[currentUser].friends;
-      const friend = userFriends.find(f => f.id === id);
+      const friend = friends.find(f => f.id === id);
       if (confirm(`「${friend.name}」を削除してもよろしいですか？`)) {
-        usersData[currentUser].friends = userFriends.filter(f => f.id !== id);
-        saveUsersData();
+        friends = friends.filter(f => f.id !== id);
+        saveData();
         renderMainContent();
       }
     }
 
     function openEditModal(id) {
       editingFriendId = id;
-      const friend = usersData[currentUser].friends.find(f => f.id === id);
+      const friend = friends.find(f => f.id === id);
       document.getElementById('editNameInput').value = friend.name;
       document.getElementById('editModal').classList.add('active');
     }
@@ -634,22 +586,15 @@
       const newName = document.getElementById('editNameInput').value.trim();
       if (!newName) return;
 
-      const friend = usersData[currentUser].friends.find(f => f.id === editingFriendId);
+      const friend = friends.find(f => f.id === editingFriendId);
       if (friend) {
         friend.name = newName;
-        saveUsersData();
+        saveData();
         renderMainContent();
       }
       closeEditModal();
     }
 
-    function getDisplayCount(totalCount) {
-      if (totalCount === 0) return 0;
-      const rem = totalCount % 20;
-      return rem === 0 ? 20 : rem;
-    }
-
-    // 検索入力時に一致するフレンドの要素へスムーズに自動スクロール
     function searchAndScrollFriend() {
       const query = document.getElementById('friendSearchInput').value.trim().toLowerCase();
       if (!query) return;
@@ -659,7 +604,6 @@
         const nameEl = item.querySelector('.friend-name');
         if (nameEl && nameEl.textContent.toLowerCase().includes(query)) {
           item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // 一時的にハイライト効果を与えて分かりやすくする
           item.style.transition = 'transform 0.2s';
           item.style.transform = 'scale(1.02)';
           setTimeout(() => {
@@ -670,89 +614,106 @@
       }
     }
 
-    // 右下のTOPボタンで最上部へ移動
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderMainContent() {
-      if (!currentUser) return;
-
       const selectedDate = getSelectedDateString();
       const todayStr = getTodayString();
 
-      const userFriends = usersData[currentUser].friends;
-      const count = userFriends.filter(f => f.completedDates.includes(selectedDate)).length;
-      
+      // カウント表示の更新
+      const count = friends.filter(f => f.completedDates && f.completedDates.includes(selectedDate)).length;
       const label = document.getElementById('dateCountLabel');
       if (label) {
         label.textContent = (selectedDate === todayStr) ? '本日の達成人数' : `${selectedDate} の達成人数`;
       }
       const countValEl = document.getElementById('todayCount');
       if (countValEl) {
-        countValEl.textContent = `${count}人`;
+        countValEl.textContent = `${count}人 / ${friends.length}人登録`;
       }
 
-      // ソートボタンのクラス（アクティブ状態）を確実に更新
+      // ソートボタンのアクティブ切り替え
       const sortButtons = document.querySelectorAll('.btn-sort');
       sortButtons.forEach(btn => {
         btn.classList.remove('active');
         if (currentSort === 'created' && btn.textContent.includes('登録日順')) btn.classList.add('active');
         if (currentSort === 'kana' && btn.textContent.includes('五十音順')) btn.classList.add('active');
         if (currentSort === 'progress' && btn.textContent.includes('進捗順')) btn.classList.add('active');
+        if (currentSort === 'uncompleted' && btn.textContent.includes('未達成/達成')) btn.classList.add('active');
       });
 
       const listEl = document.getElementById('friendList');
       if (!listEl) return;
       listEl.innerHTML = '';
 
-      let sorted = [...userFriends];
+      // ソート処理
+      let sorted = [...friends];
       if (currentSort === 'kana') {
         sorted.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
       } else if (currentSort === 'progress') {
-        sorted.sort((a, b) => b.totalCount - a.totalCount || a.createdAt - b.createdAt);
+        sorted.sort((a, b) => (b.completedDates ? b.completedDates.length : 0) - (a.completedDates ? a.completedDates.length : 0) || a.createdAt - b.createdAt);
+      } else if (currentSort === 'uncompleted') {
+        // 未達成を上に、達成済みを下に
+        sorted.sort((a, b) => {
+          const aDone = a.completedDates && a.completedDates.includes(selectedDate);
+          const bDone = b.completedDates && b.completedDates.includes(selectedDate);
+          return (aDone === bDone) ? (a.createdAt - b.createdAt) : (aDone ? 1 : -1);
+        });
       } else {
+        // 登録日順
         sorted.sort((a, b) => a.createdAt - b.createdAt);
       }
 
       sorted.forEach(friend => {
-        const displayCount = getDisplayCount(friend.totalCount);
-        const isReach = displayCount === 9 || displayCount === 19;
+        if (!friend.completedDates) friend.completedDates = [];
         
-        const isDoneOnSelectedDate = friend.completedDates.includes(selectedDate);
-        // 今日すでに絆を貯めた人はフレームごと緑色ハイライト
-        const isCompletedToday = friend.completedDates.includes(todayStr);
+        const isDone = friend.completedDates.includes(selectedDate);
+        const totalCount = friend.completedDates.length;
+        const weekCount = getWeekCount(friend, selectedDate);
+        const monthCount = getMonthCount(friend, selectedDate);
+        const prog = getProgressInfo(totalCount);
 
         const li = document.createElement('li');
-        li.className = `friend-item ${isCompletedToday ? 'completed-today' : ''}`;
+        li.className = `friend-item ${isDone ? 'completed-today' : ''}`;
 
         let reachNoticeHtml = '';
-        if (isReach) {
-          const ticketNum = displayCount === 9 ? '1枚目' : '2枚目';
-          reachNoticeHtml = `<div class="reach-warning">★ 次でオーブチケット（${ticketNum}）獲得！</div>`;
+        if (prog.isReach) {
+          reachNoticeHtml = `<div class="reach-notice">★ 次回でオーブチケット（${prog.ticket}）獲得！</div>`;
         }
 
         li.innerHTML = `
-          <div class="friend-main-row">
-            <div class="friend-info">
-              <div class="friend-name">${escapeHtml(friend.name)}</div>
-              <div class="friend-count">
-                現在: <strong>${displayCount}</strong> / 20回 (通算 ${friend.totalCount}回)
-              </div>
-              ${reachNoticeHtml}
-            </div>
-          </div>
-          <div class="friend-actions">
-            <button 
-              class="${isDoneOnSelectedDate ? 'btn-done' : 'btn-success'}" 
-              onclick="toggleComplete('${friend.id}')">
-              ${isDoneOnSelectedDate ? '✓ 選択日完了済み (解除)' : '★ 完了！'}
-            </button>
-            <div class="action-buttons-row">
+          <div class="friend-header">
+            <div class="friend-name">${escapeHtml(friend.name)}</div>
+            <div class="friend-header-actions">
               <button class="btn-edit" onclick="openEditModal('${friend.id}')">編集</button>
               <button class="btn-danger" onclick="deleteFriend('${friend.id}')">削除</button>
             </div>
           </div>
+
+          <button class="toggle-today-btn" onclick="toggleComplete('${friend.id}')">
+            ${isDone ? '☑ 選択日の絆：達成済み (タップで未達成に戻す)' : '□ 選択日の絆：未達成 (タップして達成に)'}
+          </button>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-label">今週</span>
+              <span class="stat-value">${weekCount}</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">今月</span>
+              <span class="stat-value">${monthCount}</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">進捗</span>
+              <span class="stat-value ${prog.isReach ? 'reach-red' : ''}">${prog.val}</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">累計</span>
+              <span class="stat-value">${totalCount}</span>
+            </div>
+          </div>
+          ${reachNoticeHtml}
         `;
 
         listEl.appendChild(li);
