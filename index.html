@@ -63,7 +63,7 @@
       border-radius: 14px;
       padding: 18px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(6px);
+      backdrop-: blur(6px);
       border: 1px solid var(--border-color);
     }
 
@@ -115,21 +115,56 @@
       text-align: center;
     }
 
-    /* 選択日の達成カウンター */
-    .today-counter {
-      text-align: center;
-      background: linear-gradient(135deg, #1e40af, #3b82f6);
-      color: white;
-      padding: 18px;
+    /* カウンター配置エリア (3対1の比率) */
+    .counter-row {
+      display: flex;
+      gap: 12px;
     }
-    .today-counter h2 {
-      margin: 0 0 6px 0;
-      font-size: 1.1rem;
-      opacity: 0.9;
+
+    .counter-box {
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 本日の達成人数（青枠・比率3） */
+    .today-counter-box {
+      flex: 3;
+      background: rgba(30, 41, 59, 0.95);
+      border: 2px solid var(--primary-color);
+    }
+    .today-counter-box h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #93c5fd;
     }
     .today-count-val {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: bold;
+      color: white;
+    }
+
+    /* フレンド人数（黄色枠・比率1） */
+    .total-friend-box {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.95);
+      border: 2px solid #f59e0b;
+    }
+    .total-friend-box h2 {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #fcd34d;
+    }
+    .total-friend-val {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: white;
     }
 
     /* 登録フォーム */
@@ -215,7 +250,6 @@
       transition: all 0.2s;
     }
 
-    /* 達成時の緑色フレーム＆背景 */
     .friend-item.completed-today {
       background-color: var(--card-done-bg) !important;
       border: 2px solid var(--success-border) !important;
@@ -239,7 +273,6 @@
       gap: 6px;
     }
 
-    /* 今日の絆ボタン (画像風トグル) */
     .toggle-today-btn {
       width: 100%;
       padding: 14px;
@@ -259,7 +292,6 @@
       border-color: var(--success-color);
     }
 
-    /* 4つのスタッツボックス (今週・今月・進捗・累計) */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -288,7 +320,6 @@
       color: white;
     }
 
-    /* オーブチケットリーチの赤文字 */
     .reach-red {
       color: var(--danger-color) !important;
     }
@@ -301,7 +332,6 @@
       margin-top: -4px;
     }
 
-    /* 右下TOPボタン */
     .top-scroll-btn {
       position: fixed;
       bottom: 24px;
@@ -327,7 +357,6 @@
       transform: scale(1.05);
     }
 
-    /* モーダル */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -387,10 +416,10 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'monst_kizuna_tool_data_v7';
+    const STORAGE_KEY = 'monst_kizuna_tool_data_v8';
 
     let friends = [];
-    let currentSort = 'created'; // 'created' | 'kana' | 'progress' | 'uncompleted'
+    let currentSort = 'created';
     let editingFriendId = null;
 
     function init() {
@@ -415,7 +444,6 @@
       return el ? el.value : getTodayString();
     }
 
-    // 週（月曜〜日曜）の達成回数を計算 (0〜7)
     function getWeekCount(friend, dateStr) {
       const date = new Date(dateStr);
       const day = date.getDay();
@@ -435,7 +463,6 @@
       return count;
     }
 
-    // 月（1日〜月末）の達成回数を計算 (0〜31)
     function getMonthCount(friend, dateStr) {
       const date = new Date(dateStr);
       const year = date.getFullYear();
@@ -452,7 +479,6 @@
       return count;
     }
 
-    // 20回周期の進捗 (1〜20)
     function getProgressInfo(totalCount) {
       if (totalCount === 0) return { val: 0, isReach: false, ticket: '' };
       const rem = totalCount % 20;
@@ -482,10 +508,16 @@
           <input type="date" id="dateInput" value="${selectedDate}" onchange="renderMainContent()">
         </div>
 
-        <!-- 選択日の達成人数カウンター -->
-        <div class="card today-counter">
-          <h2 id="dateCountLabel">選択日の達成人数</h2>
-          <div class="today-count-val" id="todayCount">0人</div>
+        <!-- カウンター並び（本日の達成人数：フレンド人数 = 3：1） -->
+        <div class="counter-row">
+          <div class="counter-box today-counter-box">
+            <h2 id="dateCountLabel">本日の達成人数</h2>
+            <div class="today-count-val" id="todayCount">0人</div>
+          </div>
+          <div class="counter-box total-friend-box">
+            <h2>フレンド人数</h2>
+            <div class="total-friend-val" id="totalCount">0人</div>
+          </div>
         </div>
 
         <!-- フレンド追加フォーム -->
@@ -622,15 +654,21 @@
       const selectedDate = getSelectedDateString();
       const todayStr = getTodayString();
 
-      // カウント表示の更新
-      const count = friends.filter(f => f.completedDates && f.completedDates.includes(selectedDate)).length;
+      // カウント値の更新
+      const achievedCount = friends.filter(f => f.completedDates && f.completedDates.includes(selectedDate)).length;
+      
       const label = document.getElementById('dateCountLabel');
       if (label) {
         label.textContent = (selectedDate === todayStr) ? '本日の達成人数' : `${selectedDate} の達成人数`;
       }
       const countValEl = document.getElementById('todayCount');
       if (countValEl) {
-        countValEl.textContent = `${count}人 / ${friends.length}人登録`;
+        countValEl.textContent = `${achievedCount}人`;
+      }
+
+      const totalValEl = document.getElementById('totalCount');
+      if (totalValEl) {
+        totalValEl.textContent = `${friends.length}人`;
       }
 
       // ソートボタンのアクティブ切り替え
@@ -654,14 +692,12 @@
       } else if (currentSort === 'progress') {
         sorted.sort((a, b) => (b.completedDates ? b.completedDates.length : 0) - (a.completedDates ? a.completedDates.length : 0) || a.createdAt - b.createdAt);
       } else if (currentSort === 'uncompleted') {
-        // 未達成を上に、達成済みを下に
         sorted.sort((a, b) => {
           const aDone = a.completedDates && a.completedDates.includes(selectedDate);
           const bDone = b.completedDates && b.completedDates.includes(selectedDate);
           return (aDone === bDone) ? (a.createdAt - b.createdAt) : (aDone ? 1 : -1);
         });
       } else {
-        // 登録日順
         sorted.sort((a, b) => a.createdAt - b.createdAt);
       }
 
